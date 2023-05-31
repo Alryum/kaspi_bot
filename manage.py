@@ -2,11 +2,12 @@ from collectors.base_scraper import BaseScraper
 
 
 if __name__ == '__main__':
+    input_url = input('give me url: ')
     print('Starting...')
     scraper = BaseScraper()
     print('Init complete')
     p_links = scraper.get_product_links_list(
-        'https://kaspi.kz/shop/c/wireless%20chargers/?q=%3AavailableInZones%3AMagnum_ZONE1%3Acategory%3AWireless%20chargers&sort=rating&sc&page=1', 4)
+        input_url, scraper.config.getint('main', 'number_of_pages_to_parse'))
     result_list = []
     for i in p_links:
         print(f'working with {i}')

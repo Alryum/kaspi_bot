@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from collections import Counter
+from configparser import ConfigParser
 import time
 
 
@@ -12,6 +13,8 @@ class BaseScraper:
     def __init__(self):
         self.service = FirefoxService(
             executable_path='Z:\alryum\python_projects\kaspi_bot\drivers\geckodriver.exe')
+        self.config = ConfigParser()
+        self.config.read('config.ini')
         self.driver = None
 
 
@@ -95,10 +98,16 @@ class BaseScraper:
                 links_list.extend([i.get_attribute('href') for i in product_list])
 
                 next_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li.pagination__el:nth-child(7)')))
+                '''
+                несмотря на то, что используется WebDriverWait, 
+                элементы рандомным образом "не находятся"
+                слипы решают проблему
+                '''
                 time.sleep(1)
                 next_btn.click()
                 time.sleep(1)
             except:
+                print('WARNING! FCKDUP WITH SOME LINK')
                 continue  
         
         print('DONE')
@@ -112,9 +121,8 @@ class BaseScraper:
         
         self.__solve_location_dialog()
         self.__load_all_reviews()
-        if self.__get_amount_of_new_reviews() >= 10:
-            return True
-        return False
+        return self.__get_amount_of_new_reviews() >= self.config.getint('main', 'feedback_threshold')
+
 
 
     def close_browser(self):
