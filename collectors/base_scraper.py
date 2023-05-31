@@ -1,4 +1,5 @@
 from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver import Firefox
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,7 +19,9 @@ class BaseScraper:
         '''
         Инициализирует драйвер
         '''
-        self.driver = Firefox(service=self.service)
+        options = Options()
+        options.headless = True
+        self.driver = Firefox(service=self.service, options=options)
 
 
     def __navigate_to_website(self, url):
@@ -75,18 +78,30 @@ class BaseScraper:
         if not self.driver:
             self.__start_browser()
         self.__navigate_to_website(url)
+
+        print('solving location dialog...')
+
         self.__solve_location_dialog()
+
+        print('DONE')
         links_list = []
 
+        print('collecting products links...')
+
         for i in range(amount_of_pages):
-            product_list = self.driver.find_elements(By.CLASS_NAME, 'item-card__image-wrapper')
-            links_list.extend([i.get_attribute('href') for i in product_list])
             try:
-                next_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#scroll-to > div.item-cards-grid > div.pagination > li:nth-child(7)')))
+                # product_list = self.driver.find_elements(By.CLASS_NAME, 'item-card__image-wrapper')
+                product_list = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'item-card__image-wrapper')))
+                links_list.extend([i.get_attribute('href') for i in product_list])
+
+                next_btn = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li.pagination__el:nth-child(7)')))
+                time.sleep(1)
                 next_btn.click()
+                time.sleep(1)
             except:
-                break  
+                continue  
         
+        print('DONE')
         return links_list
 
 
