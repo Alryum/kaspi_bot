@@ -11,10 +11,10 @@ import time
 
 class BaseScraper:
     def __init__(self):
-        self.service = FirefoxService(
-            executable_path='Z:\alryum\python_projects\kaspi_bot\drivers\geckodriver.exe')
         self.config = ConfigParser()
         self.config.read('config.ini')
+        self.service = FirefoxService(
+            executable_path=self.config.get('main', 'driver_name'))
         self.driver = None
 
 
