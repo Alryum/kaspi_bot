@@ -7,7 +7,7 @@ if __name__ == '__main__':
     scraper = BaseScraper()
     print('Init complete')
     p_links = scraper.get_product_links_list(
-        input_url, scraper.config.getint('main', 'number_of_pages_to_parse'))
+        input_url, max(scraper.config.getint('main', 'number_of_pages_to_parse') - 1, 1))
     result_list = []
     for i in p_links:
         print(f'working with {i}')
@@ -18,3 +18,7 @@ if __name__ == '__main__':
 
     with open('output.txt', 'w') as file:
         file.writelines('\n'.join(result_list))
+
+    print('---')
+    print('the work is done')
+    print('you can restart the script with another URL')
