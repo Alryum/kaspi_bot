@@ -102,7 +102,6 @@ class BaseScraper:
                 элементы рандомным образом "не находятся"
                 слипы решают проблему
                 '''
-                print(next_btn.text)
                 time.sleep(1)
                 next_btn.click()
                 time.sleep(1)
